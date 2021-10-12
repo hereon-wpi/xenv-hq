@@ -81,7 +81,7 @@ public class HeadQuarter {
 
     @Command
     public void clearAll() throws IOException {
-        Arrays.stream(new String[]{"bin", "etc", "logs"}).forEach(s -> {
+        Arrays.stream(new String[]{"bin", "etc"}).forEach(s -> {
             try {
                 FileUtils.deleteDirectory(Paths.get(s).toFile());
             } catch (IOException e) {
@@ -91,8 +91,15 @@ public class HeadQuarter {
             }
         });
 
-        Files.createDirectory(Paths.get("logs"));
-        deviceManager.pushStateChangeEvent(DeviceState.ON);
+        Arrays.stream(new String[]{"bin", "etc"}).forEach(s -> {
+            try {
+                Files.createDirectory(Paths.get("logs"));
+            } catch(IOException e){
+                logger.error("Failed to create directory " + s, e);
+                deviceManager.pushStateChangeEvent(DeviceState.ALARM);
+                deviceManager.pushStatusChangeEvent("Failed to delete directory " + s);
+            }
+        });
     }
 
     @Attribute
