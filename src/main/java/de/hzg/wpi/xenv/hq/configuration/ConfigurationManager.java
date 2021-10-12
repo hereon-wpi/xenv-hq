@@ -130,25 +130,15 @@ public class ConfigurationManager {
         return XmlHelper.toXmlString(getNexusFile());
     }
 
-    private volatile Path dfsConfigurationOutputDir = Paths.get("etc/DataFormatServer");
-
-    @Attribute(isMemorized = true)
-    public String getDataFormatServerConfigurationOutputDir(){
-        return dfsConfigurationOutputDir.toString();
-    }
-
-    @Attribute(isMemorized = true)
-    @AttributeProperties(description = "full path to the DataFormatServer configuration output dir")
-    public void setDataFormatServerConfigurationOutputDir(String v) throws IOException {
-        dfsConfigurationOutputDir = Paths.get(v);
-        if(!Files.exists(dfsConfigurationOutputDir)){
-            Files.createDirectories(dfsConfigurationOutputDir);
-        }
-    }
+    private final Path dfsConfigurationOutputDir = Paths.get("etc/DataFormatServer");
 
     @Command
     public void writeDataFormatServerConfiguration() {
         try {
+            if(!Files.exists(dfsConfigurationOutputDir)){
+                Files.createDirectories(dfsConfigurationOutputDir);
+            }
+
             Files.newOutputStream(
                     dfsConfigurationOutputDir.resolve("default.nxdl.xml"))
                     .write(getNexusFileXml().getBytes());
@@ -192,25 +182,15 @@ public class ConfigurationManager {
         camelManager.deleteCamelRoute(id);
     }
 
-    private volatile Path camelConfigurationOutputDir = Paths.get("etc/CamelIntegration");
-
-    @Attribute(isMemorized = true)
-    public String getCamelConfigurationOutputDir(){
-        return dfsConfigurationOutputDir.toString();
-    }
-
-    @Attribute(isMemorized = true)
-    @AttributeProperties(description = "full path to the CamelIntegration configuration output dir")
-    public void setCamelConfigurationOutputDir(String v) throws IOException {
-        camelConfigurationOutputDir = Paths.get(v);
-        if(!Files.exists(camelConfigurationOutputDir)){
-            Files.createDirectories(camelConfigurationOutputDir);
-        }
-    }
+    private final Path camelConfigurationOutputDir = Paths.get("etc/CamelIntegration");
 
     @Command
     public void writeCamelConfiguration() {
         try {
+            if(!Files.exists(camelConfigurationOutputDir)){
+                Files.createDirectories(camelConfigurationOutputDir);
+            }
+
             Files.newOutputStream(
                     camelConfigurationOutputDir.resolve("routes.xml"))
                     .write(getCamelRoutesXml().getBytes());
@@ -238,30 +218,19 @@ public class ConfigurationManager {
         return XmlHelper.toXmlString(task.get());
     }
 
-    private volatile Path ssConfigurationOutputDir = Paths.get("etc/StatusServer");
-
-    @Attribute(isMemorized = true)
-    public String getStatusServerConfigurationOutputDir(){
-        return ssConfigurationOutputDir.toString();
-    }
-
-    @Attribute(isMemorized = true)
-    @AttributeProperties(description = "full path to the StatusServer configuration output dir")
-    public void setStatusServerConfigurationOutputDir(String v) throws IOException {
-        ssConfigurationOutputDir = Paths.get(v);
-        if(!Files.exists(ssConfigurationOutputDir)){
-            Files.createDirectories(ssConfigurationOutputDir);
-        }
-    }
+    private final Path ssConfigurationOutputDir = Paths.get("etc/StatusServer");
 
     @Command
     public void writeStatusServerConfiguration() {
         try {
+            if(!Files.exists(ssConfigurationOutputDir)){
+                Files.createDirectories(ssConfigurationOutputDir);
+            }
             Files.newOutputStream(
                     ssConfigurationOutputDir.resolve("status_server.xml"))
                     .write(getStatusServerXml().getBytes());
         } catch (Exception e) {
-            logger.error("Failed to write StatusServer configuration");
+            logger.error("Failed to write StatusServer configuration", e);
             deviceManager.pushStateChangeEvent(DeviceState.ALARM);
         }
     }
@@ -288,25 +257,14 @@ public class ConfigurationManager {
         return predatorManager.getPreExperimentDataCollectorLoginProperties().toArray(String[]::new);
     }
 
-    private volatile Path predatorConfigurationOutputDir = Paths.get("etc/PreExperimentDataCollector");
-
-    @Attribute(isMemorized = true)
-    public String getPreExperimentDataCollectorConfigurationOutputDir(){
-        return predatorConfigurationOutputDir.toString();
-    }
-
-    @Attribute(isMemorized = true)
-    @AttributeProperties(description = "full path to the PreExperimentDataCollector configuration output dir")
-    public void setPreExperimentDataCollectorConfigurationOutputDir(String v) throws IOException {
-        predatorConfigurationOutputDir = Paths.get(v);
-        if(!Files.exists(predatorConfigurationOutputDir)){
-            Files.createDirectories(predatorConfigurationOutputDir);
-        }
-    }
+    private final Path predatorConfigurationOutputDir = Paths.get("etc/PreExperimentDataCollector");
 
     @Command
     public void writePreExperimentDataCollectorConfiguration() {
         try {
+            if(!Files.exists(predatorConfigurationOutputDir)){
+                Files.createDirectories(predatorConfigurationOutputDir);
+            }
             Files.newOutputStream(
                     predatorConfigurationOutputDir.resolve("meta.yaml"))
                     .write(getPreExperimentDataCollectorYaml().getBytes());
@@ -316,7 +274,7 @@ public class ConfigurationManager {
                     .write(
                             String.join("\n", getPreExperimentDataCollectorLoginProperties()).getBytes());
         } catch (Exception e) {
-            logger.error("Failed to write PreExperimentDataCollector configuration");
+            logger.error("Failed to write PreExperimentDataCollector configuration", e);
             deviceManager.pushStateChangeEvent(DeviceState.ALARM);
         }
     }
