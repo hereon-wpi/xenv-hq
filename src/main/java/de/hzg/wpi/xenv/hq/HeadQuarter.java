@@ -50,7 +50,6 @@ public class HeadQuarter {
         ApiUtil.set_db_obj(System.getProperty("TANGO_HOST", "localhost:10000"));
         XenvManager.createTempDirectory();
         XenvManager.extractResources();
-        setSystemProperties();
 
         ServerManager.getInstance().addClass("ConfigurationManager", ConfigurationManager.class);
         ServerManager.getInstance().addClass("XenvManager", XenvManager.class);
@@ -225,13 +224,6 @@ public class HeadQuarter {
     @FunctionalInterface
     public static interface ThrowingConsumer<T, E extends Exception> {
         void accept(T t) throws E;
-    }
-
-    private static void setSystemProperties() throws IOException {
-        Properties properties = new Properties();
-        properties.load(HeadQuarter.class.getResourceAsStream("/xenv.properties"));
-
-        System.getProperties().putAll(properties);
     }
 
     public DeviceState getState() {
