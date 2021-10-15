@@ -25,8 +25,14 @@ public class DataSourceToNxLogConverter implements Callable<NxGroup> {
         nxLog.name = name;
         nxLog.type = "NXlog";
 
-        NxField value = new DataSourceToNxFieldWithDimensionsConverter("value", type).call();
-        NxField time = new DataSourceToNxFieldWithDimensionsConverter("time", "uint64").call();
+        NxField value;
+        if("string".equals(type))
+            value = new DataSourceToNxFieldWithDimensionsConverter("value", type)
+                    .inline()
+                    .call();
+        else
+            value = new DataSourceToNxFieldConverter("value", type).call();
+        NxField time = new DataSourceToNxFieldConverter("time", "uint64").call();
 
         nxLog.fields = Lists.newArrayList();
         nxLog.fields.add(value);

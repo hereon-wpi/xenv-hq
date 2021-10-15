@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
  */
 public class DataSourceToNxFieldWithDimensionsConverter implements Callable<NxField> {
     private final DataSourceToNxFieldConverter helper;
+    private volatile boolean inline = false;
 
     public DataSourceToNxFieldWithDimensionsConverter(String name, String type) {
         this.helper = new DataSourceToNxFieldConverter(name, type);
@@ -26,7 +27,13 @@ public class DataSourceToNxFieldWithDimensionsConverter implements Callable<NxFi
         dimension.index = 0;
         dimension.value = 0;
 
-        value.dimensions.dimensions.add(dimension);
+        if(!inline)
+            value.dimensions.dimensions.add(dimension);
         return value;
+    }
+
+    public DataSourceToNxFieldWithDimensionsConverter inline() {
+        this.inline = true;
+        return this;
     }
 }

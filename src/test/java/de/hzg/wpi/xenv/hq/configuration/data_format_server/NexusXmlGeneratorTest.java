@@ -10,8 +10,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -98,10 +97,11 @@ public class NexusXmlGeneratorTest {
     }
 
     @Test
-    public void generateNxField() throws Exception {
+    public void generateNxField_Scalar() throws Exception {
         Configuration configuration = new Configuration();
         configuration.dataSourceList = Lists.newArrayList(
-                new DataSource(System.currentTimeMillis(), "/entry/hardware/motor1/name", "scalar", "tango://...", 200, "string")
+                new DataSource(System.currentTimeMillis(), "/entry/hardware/motor1/name", "scalar", "tango://...", 200, "string"),
+                new DataSource(System.currentTimeMillis(), "/entry/hardware/motor1/position", "scalar", "tango://...", 200, "float64")
         );
 
 
@@ -117,6 +117,53 @@ public class NexusXmlGeneratorTest {
 
         assertEquals("name", result.fields.get(0).name);
         assertEquals("string", result.fields.get(0).type);
+        assertNull(result.fields.get(0).dimensions);
+
+        assertEquals("position", result.fields.get(1).name);
+        assertEquals("float64", result.fields.get(1).type);
+        assertNotNull(result.fields.get(1).dimensions);
+    }
+
+    @Test
+    public void generateNxField_NxLog() throws Exception {
+        Configuration configuration = new Configuration();
+        configuration.dataSourceList = Lists.newArrayList(
+                new DataSource(System.currentTimeMillis(), "/entry/hardware/motor1/name", "log", "tango://...", 200, "string"),
+                new DataSource(System.currentTimeMillis(), "/entry/hardware/motor1/position", "log", "tango://...", 200, "float64")
+        );
+
+
+        NexusXmlGenerator instance = new NexusXmlGenerator(configuration.dataSourceList, nexusXml);
+
+        NxGroup nexusXml1 = instance.call();
+
+        NxGroup result = (NxGroup) JXPathContext.newContext(nexusXml1).getValue("/groups[name='hardware']/groups[name='motor1']/groups[name='name']");
+
+        assertNotNull(result);
+        assertEquals("NXlog", result.type);
+        assertEquals("name", result.name);
+
+        assertEquals("value", result.fields.get(0).name);
+        assertEquals("string", result.fields.get(0).type);
+        assertNotNull(result.fields.get(0).dimensions);
+
+        assertEquals("time", result.fields.get(1).name);
+        assertEquals("uint64", result.fields.get(1).type);
+        assertNull(result.fields.get(1).dimensions);
+
+        result = (NxGroup) JXPathContext.newContext(nexusXml1).getValue("/groups[name='hardware']/groups[name='motor1']/groups[name='position']");
+
+        assertNotNull(result);
+        assertEquals("NXlog", result.type);
+        assertEquals("position", result.name);
+
+        assertEquals("value", result.fields.get(0).name);
+        assertEquals("float64", result.fields.get(0).type);
+        assertNull(result.fields.get(0).dimensions);
+
+        assertEquals("time", result.fields.get(1).name);
+        assertEquals("uint64", result.fields.get(1).type);
+        assertNull(result.fields.get(1).dimensions);
     }
 
     @Test

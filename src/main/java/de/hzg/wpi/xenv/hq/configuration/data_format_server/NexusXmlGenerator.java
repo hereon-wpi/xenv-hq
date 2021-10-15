@@ -62,10 +62,17 @@ public class NexusXmlGenerator implements Callable<NxGroup> {
                         new DataSourceToNxLogConverter(jxPath.getName(), dataSource.dataType).call());
                 break;
             case "spectrum":
-                parentGroup.fields.add(new DataSourceToNxFieldWithDimensionsConverter(jxPath.getName(), dataSource.dataType).call());
+                parentGroup.fields.add(new DataSourceToNxFieldWithDimensionsConverter(jxPath.getName(), dataSource.dataType)
+                        .call());
                 break;
             case "scalar":
-                parentGroup.fields.add(new DataSourceToNxFieldConverter(jxPath.getName(), dataSource.dataType).call());
+                if("string".equals(dataSource.dataType))
+                    parentGroup.fields.add(new DataSourceToNxFieldConverter(jxPath.getName(), dataSource.dataType)
+                            .call());
+                else
+                    parentGroup.fields.add(new DataSourceToNxFieldWithDimensionsConverter(jxPath.getName(), dataSource.dataType)
+                        .inline()
+                        .call());
                 break;
         }
     }
