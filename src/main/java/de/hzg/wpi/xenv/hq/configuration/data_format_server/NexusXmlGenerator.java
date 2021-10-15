@@ -66,14 +66,8 @@ public class NexusXmlGenerator implements Callable<NxGroup> {
                         .call());
                 break;
             case "scalar":
-                if("string".equals(dataSource.dataType))
-                    parentGroup.fields.add(new DataSourceToNxFieldConverter(jxPath.getName(), dataSource.dataType)
-                            .call());
-                else
-                    parentGroup.fields.add(new DataSourceToNxFieldWithDimensionsConverter(jxPath.getName(), dataSource.dataType)
-                        .inline()
+                parentGroup.fields.add(new DataSourceToNxFieldConverter(jxPath.getName(), dataSource.dataType)
                         .call());
-                break;
         }
     }
 }

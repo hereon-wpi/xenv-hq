@@ -121,7 +121,7 @@ public class NexusXmlGeneratorTest {
 
         assertEquals("position", result.fields.get(1).name);
         assertEquals("float64", result.fields.get(1).type);
-        assertNotNull(result.fields.get(1).dimensions);
+        assertNull(result.fields.get(1).dimensions);
     }
 
     @Test
